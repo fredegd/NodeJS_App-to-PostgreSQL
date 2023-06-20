@@ -15,7 +15,7 @@ const getOrders = async (req, res) => {
 const getOrder = async (req, res) => {
   try {
     const { id } = req.params;
-    const { rows } = await pool.query("SELECT * FROM users WHERE id=$1;", [id]);
+    const { rows } = await pool.query("SELECT * FROM orders WHERE id=$1;", [id]);
 
     res.status(500).json(rows);
   } catch (error) {

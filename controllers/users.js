@@ -42,11 +42,11 @@ const createUser = async (req, res) => {
 const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const { firstName, lastName, age } = req.body;
+    const { first_name, last_name, age } = req.body;
 
     const { rows } = await pool.query(
       "UPDATE users SET first_name=$1, last_name=$2, age=$3 WHERE id=$4 RETURNING *;",
-      [firstName, lastName, age, id]
+      [first_name, last_name, age, id]
     );
 
     res.status(200).json(rows[0]);

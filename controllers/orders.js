@@ -48,7 +48,6 @@ const updateOrder = async (req, res) => {
       "UPDATE orders SET price=$1, date=$2, user_id=$3 WHERE id=$4 RETURNING *;",
       [price,date, user_id, id]
     );
-
     res.status(200).json(rows[0]);
   } catch (error) {
     console.error(error);
@@ -61,9 +60,9 @@ const deleteOrder = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const result = await pool.query("DELETE FROM users where id=$1;", [id]);
+    const result = await pool.query("DELETE FROM orders where id=$1;", [id]);
     if (result.rowCount > 0) {
-      res.status(200).json("User Successfully deleted");
+      res.status(200).json("Order Successfully deleted");
     } else {
       {
         res.status(400).json("not found");

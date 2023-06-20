@@ -2,10 +2,10 @@ const express = require("express");
 
 const {
     getOrders,
-    getUser,
-    createUser,
-    updateUser,
-    deleteUser,
+    getOrder,
+    createOrder,
+    updateOrder,
+    deleteOrder,
   } = require("../controllers/orders");
 
 

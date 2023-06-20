@@ -42,11 +42,11 @@ const createOrder = async (req, res) => {
 const updateOrder = async (req, res) => {
   try {
     const { id } = req.params;
-    const { first_name, last_name, age } = req.body;
+    const { price,date, user_id} = req.body;
 
     const { rows } = await pool.query(
-      "UPDATE users SET first_name=$1, last_name=$2, age=$3 WHERE id=$4 RETURNING *;",
-      [first_name, last_name, age, id]
+      "UPDATE orders SET price=$1, date=$2, user_id=$3 WHERE id=$4 RETURNING *;",
+      [price,date, user_id, id]
     );
 
     res.status(200).json(rows[0]);

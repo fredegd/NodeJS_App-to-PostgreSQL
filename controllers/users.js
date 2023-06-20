@@ -63,7 +63,7 @@ const deleteUser = async (req, res) => {
 
     const result = await pool.query("DELETE FROM users where id=$1;", [id]);
     if (result.rowCount > 0) {
-      res.status(200).json("success");
+      res.status(200).json("User Successfully deleted");
     } else {
       {
         res.status(400).json("not found");

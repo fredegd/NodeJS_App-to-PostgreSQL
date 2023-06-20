@@ -13,7 +13,7 @@ const {
 
 ordersRouter.get("/", getOrders);
 
-ordersRouter.get("/:id", getOrders);
+ordersRouter.get("/:id", getOrder);
 
 ordersRouter.post("/", createOrder);
 

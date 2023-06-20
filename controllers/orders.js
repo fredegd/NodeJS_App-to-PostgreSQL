@@ -27,10 +27,10 @@ const getOrder = async (req, res) => {
 
 const createOrder = async (req, res) => {
   try {
-    const { first_name, last_name, age } = req.body;
+    const { price, date, user_id } = req.body;
     const { rows } = await pool.query(
-      "INSERT INTO users (first_name, last_name, age) VALUES ($1,$2, $3);",
-      [first_name, last_name, age]
+      "INSERT INTO orders (price, date, user_id) VALUES ($1,$2, $3);",
+      [price, date, user_id]
     );
     res.json(rows);
   } catch (error) {

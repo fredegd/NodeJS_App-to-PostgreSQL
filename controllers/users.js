@@ -25,6 +25,24 @@ const getUser = async (req, res) => {
 };
 
 
+
+const getUserOrders = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { rows } = await pool.query(`SELECT * 
+    FROM orders
+    INNER JOIN users
+    ON orders.user_id = users.id
+    WHERE users.id = $1;`, [id]);
+
+    res.status(200).json(rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Something went wrong");
+  }
+};
+
+
 const createUser = async (req, res) => {
   try {
     const { first_name, last_name, age } = req.body;
@@ -76,4 +94,4 @@ const deleteUser = async (req, res) => {
 };
 
 
-  module.exports = { getUsers, getUser, createUser, updateUser, deleteUser };
+  module.exports = { getUsers, getUser,getUserOrders, createUser, updateUser, deleteUser };

@@ -24,7 +24,7 @@ const getUser = async (req, res) => {
     const { id } = req.params;
     const { rows } = await pool.query("SELECT * FROM users WHERE id=$1;", [id]);
 
-    res.status(500).json(rows);
+    res.status(200).json(rows);
   } catch (error) {
     console.error(error);
     res.status(500).send("Something went wrong");

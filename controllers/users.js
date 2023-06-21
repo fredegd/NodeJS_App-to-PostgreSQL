@@ -1,8 +1,13 @@
 const pool = require("../db");
 
+const{ validationResult}= require("express-validator")
+
+
 const getUsers = async (req, res) => {
+  const {orderBy} = req.query
+  console.log(orderBy, typeof orderBy)
     try {
-      const { rows } = await pool.query("SELECT * FROM users;");
+      const { rows } = await pool.query(`SELECT * FROM users ORDER BY $1 DESC;`,[orderBy]);
       res.json(rows);
     } catch (error) {
       console.error(error);
@@ -14,6 +19,8 @@ const getUsers = async (req, res) => {
 
 const getUser = async (req, res) => {
   try {
+    const errors = validationResult(req)
+
     const { id } = req.params;
     const { rows } = await pool.query("SELECT * FROM users WHERE id=$1;", [id]);
 
@@ -45,15 +52,21 @@ const getUserOrders = async (req, res) => {
 
 const createUser = async (req, res) => {
   try {
-    const { first_name, last_name, age } = req.body;
-    const { rows } = await pool.query(
-      "INSERT INTO users (first_name, last_name, age) VALUES ($1,$2, $3);",
-      [first_name, last_name, age]
-    );
-    res.json(rows);
+    const errors = validationResult(req)
+ 
+    if(!errors.isEmpty()){
+      return res.send(errors).status(400);
+    }else{
+      const { first_name, last_name, age } = req.body;
+      const { rows } = await pool.query(
+        "INSERT INTO users (first_name, last_name, age) VALUES ($1,$2, $3);",
+        [first_name, last_name, age]
+      );
+      res.status(200).json({first_name, last_name, age});
+    }
   } catch (error) {
     console.error(error);
-    res.status(500).send("Something went wrong");
+    res.status(500).send("Something went wrong, please read the instructions");
   }
 };
 
@@ -75,6 +88,51 @@ const updateUser = async (req, res) => {
 };
 
 
+const checkInactive = async (req, res) => {
+  try {
+    const { id } = req.params;
+    // Check if the user exists
+    const userExists = await pool.query(
+      "SELECT * FROM users WHERE id = $1;",
+      [id]
+    );
+    if(userExists.rowCount!==0){
+      
+    // Check if the user has any orders
+    const orderQuery = await pool.query(
+      "SELECT * FROM orders WHERE user_id = $1;",
+      [id]
+    );
+    const orderCount = +orderQuery.rowCount;
+      console.log(orderCount)
+    if (orderCount === 0) {
+      // If the user has no orders, set active to false
+      const { rows } = await pool.query(
+        "UPDATE users SET active = $1 WHERE id = $2 RETURNING first_name, active;",
+        [false, id]
+      );
+      res.status(200).json(rows);
+    } else {
+      // If the user has orders, return their current status
+      const { rows } = await pool.query("SELECT first_name, active FROM users WHERE id = $1;", [
+        id,
+      ]);
+      res.status(200).json(rows);
+    }
+
+    }else{
+      res.status(400).send("User does´t exist");
+      console.log("noway")
+    }
+   
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Something went wrong");
+  }
+};
+
+
+
 const deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
@@ -94,4 +152,4 @@ const deleteUser = async (req, res) => {
 };
 
 
-  module.exports = { getUsers, getUser,getUserOrders, createUser, updateUser, deleteUser };
+  module.exports = { getUsers, getUser,getUserOrders, createUser, updateUser, checkInactive, deleteUser };
